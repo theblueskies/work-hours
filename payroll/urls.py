@@ -15,7 +15,11 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
+from api.views import PayrollFileUpload, RegularGet
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    # url(r'^upload/(?P<filename>[^/]+)$', PayrollFileUpload.as_view(), name='upload'),
+    url(r'^upload/$', PayrollFileUpload.as_view(), name='upload'),
+    url(r'^gather/$', RegularGet.as_view())
 ]
