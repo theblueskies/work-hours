@@ -1,1 +1,45 @@
+version: '3'
+services:
+  # App
+  waveapp:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+      - postgres
+    volumes:
+      - .:/src/wave
+    environment:
+      # - DJANGO_SETTINGS_MODULE=payroll.settings
+      - ENVIRON=local
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - DB_USER=postgres
+      - DB_HOST=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=wave_db
+    networks:
+      - default
+      - waveapp
 
+  redis:
+    image: redis:3.0
+    ports:
+      - "6379:6379"
+    networks:
+      - default
+
+  postgres:
+    image: postgres:9.5.2
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=wave_db
+      - POSTGRES_USER=postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - default
+
+networks:
+  waveapp:
