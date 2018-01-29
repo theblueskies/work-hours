@@ -4,10 +4,9 @@ import pytest
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
-from api.util import file_utility
-from api.models import WorkHistory
+from api.models import EmployeeWorkHistory
 
-pytestmark = pytest.mark.django_db
+pytestmark = [pytest.mark.django_db]
 
 
 class TestFileEndpoint(APITestCase):
@@ -22,4 +21,5 @@ class TestFileEndpoint(APITestCase):
 
         response = self.client.post(url, data, format='multipart')
         assert response.status_code == 201
-        assert WorkHistory.objects.count() == 32
+        import pdb; pdb.set_trace()
+        assert EmployeeWorkHistory.objects.count() == 32

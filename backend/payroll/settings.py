@@ -75,14 +75,29 @@ WSGI_APPLICATION = 'payroll.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': os.getenv("DB_NAME", "wave_db"),
+            'USER': os.getenv("DB_USER"),
+            'PASSWORD': os.getenv("DB_PASSWORD"),
+            'HOST': os.getenv("DB_HOST", "postgres"),
+            'PORT': os.getenv("DB_PORT", "5432"),
+            'ATOMIC_REQUESTS': True,
     }
 }
 
-
+# - DB_USER=postgres
+# - DB_HOST=postgres
+# - DB_PASSWORD=postgres
+# - DB_NAME=wave_db
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
@@ -93,8 +108,13 @@ CACHES = {
     }
 }
 
-CELERY_BROKER_URL = CACHES['default']['LOCATION']
-CELERY_RESULT_BACKEND = CACHES['default']['BACKEND']
+CELERY_BROKER_URL = 'redis://redis:6379/1'
+CELERY_RESULT_BACKEND = 'redis://redis:6379'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TASK_SERIALIZER = 'json'
+# CELERY_TIMEZONE = 'Asia/Makassar'
+CELERY_BEAT_SCHEDULE = {}
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
@@ -126,7 +146,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)

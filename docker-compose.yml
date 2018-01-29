@@ -9,7 +9,7 @@ services:
       - redis
       - postgres
     volumes:
-      - .:/src/wave
+      - ./backend:/src
     environment:
       # - DJANGO_SETTINGS_MODULE=payroll.settings
       - ENVIRON=local
