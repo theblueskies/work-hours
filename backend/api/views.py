@@ -9,6 +9,7 @@ from rest_framework.status import HTTP_201_CREATED
 
 from api.models import WorkHistory
 
+from django.core.cache import cache
 
 class PayrollFileUpload(APIView):
     parser_classes = (MultiPartParser,)
@@ -32,6 +33,10 @@ class PayrollFileUpload(APIView):
         return Response(status=HTTP_201_CREATED)
 
 
-class RegularGet(APIView):
+class GetReport(APIView):
     def get(self, request, format=None):
-        return Response({'status': 'hello'})
+        value = cache.get("foo")
+        if value:
+            return Response({'value': 'obtained'})
+        cache.set("foo", "value")
+        return Response({'value': 'value not obtained. value set'})
