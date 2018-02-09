@@ -7,11 +7,13 @@ from django.core.cache import cache
 from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
-from rest_framework.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
+from rest_framework.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_200_OK
 from psycopg2.extras import DateRange
 
-from api.models import EmployeeWorkHistory, Report
 from api.async_tasks import process_records
+from api.models import EmployeeWorkHistory, Report
+from api.serializers import ReportSerializer
+
 
 class PayrollFileUpload(APIView):
     parser_classes = (MultiPartParser,)
@@ -51,8 +53,6 @@ class PayrollFileUpload(APIView):
 
 class GetReport(APIView):
     def get(self, request, format=None):
-        value = cache.get("foo")
-        if value:
-            return Response({'value': 'obtained'})
-        cache.set("foo", "value")
-        return Response({'value': 'value not obtained. value set'})
+        reports = Report.objects.all().order_by('pay_period')
+        serialized = ReportSerializer(reports, many=True)
+        return Response({'data': serialized.data}, status=HTTP_200_OK)
