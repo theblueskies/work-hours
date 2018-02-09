@@ -11,7 +11,6 @@ from rest_framework.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
 from psycopg2.extras import DateRange
 
 from api.models import EmployeeWorkHistory, Report
-# from payroll.celery_task import process_records
 from api.async_tasks import process_records
 
 class PayrollFileUpload(APIView):
@@ -46,7 +45,7 @@ class PayrollFileUpload(APIView):
             cache.set(key, work_history_queue[counter])
 
         # Calls the async celery task
-        process_records(report_id, len(work_history_queue))
+        process_records.delay(report_id, len(work_history_queue))
         return Response(status=HTTP_201_CREATED)
 
 
