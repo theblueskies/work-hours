@@ -21,5 +21,5 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     # url(r'^upload/(?P<filename>[^/]+)$', PayrollFileUpload.as_view(), name='upload'),
     url(r'^upload/$', PayrollFileUpload.as_view(), name='upload'),
-    url(r'^report/$', GetReport.as_view())
+    url(r'^report/$', GetReport.as_view(), name='report')
 ]

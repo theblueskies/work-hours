@@ -55,4 +55,4 @@ class GetReport(APIView):
     def get(self, request, format=None):
         reports = Report.objects.all().order_by('pay_period')
         serialized = ReportSerializer(reports, many=True)
-        return Response({'data': serialized.data}, status=HTTP_200_OK)
+        return Response(data=serialized.data, status=HTTP_200_OK)
