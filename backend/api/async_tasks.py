@@ -1,6 +1,7 @@
 from __future__ import absolute_import, unicode_literals
 
 import os
+from string import ascii_uppercase
 
 from django.core.cache import cache
 from celery import Celery
@@ -21,10 +22,15 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks()
 
 
+def generate_payscale():
+    return dict(zip(list(ascii_uppercase), [10 * i for i in range(1, 27, 1)]))
+
 @app.task(bind=True)
 def process_records(self, report_id, count):
     from api.models import EmployeeWorkHistory, Report
     from api.util import get_date_range
+
+    payscale = generate_payscale()
 
     for counter in range(count):
         key = str(report_id) + '-' + str(counter)
@@ -46,6 +52,8 @@ def process_records(self, report_id, count):
                 existing_hours = float(report_qs.first().hours_worked)
                 existing_instance = report_qs.first()
                 existing_instance.hours_worked = existing_hours + float(item['hours_worked'])
+                # Calculate their cumulative pay for the pay period
+                existing_instance.amount_paid += float(item['hours_worked']) * payscale[item['job_group'].upper()]
                 existing_instance.save()
 
             # Create a new instance for the user and pay period range
@@ -53,6 +61,6 @@ def process_records(self, report_id, count):
                 new_report = Report(employee_id=item['employee_id'],
                                     pay_period=date_range,
                                     hours_worked=float(item['hours_worked']),
-                                    amount_paid=123.45)
+                                    amount_paid=float(item['hours_worked']) * payscale[item['job_group'].upper()])
 
                 new_report.save()
