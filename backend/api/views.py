@@ -1,4 +1,5 @@
 import csv
+import json
 import io
 from datetime import datetime
 
@@ -10,8 +11,8 @@ from rest_framework.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST
 from psycopg2.extras import DateRange
 
 from api.models import EmployeeWorkHistory, Report
-from api.util import get_date_range
-
+# from payroll.celery_task import process_records
+from api.async_tasks import process_records
 
 class PayrollFileUpload(APIView):
     parser_classes = (MultiPartParser,)
@@ -21,11 +22,12 @@ class PayrollFileUpload(APIView):
 
         io_string = io.StringIO(file_obj)
         work_history_queue = []
+
         for row in csv.DictReader(io_string, delimiter=',', quotechar='|'):
             if row['date'] == 'report id':
                 report_id = row['hours worked'] # The report ID is stored in this column
-                # import pdb; pdb.set_trace()
-                if EmployeeWorkHistory.objects.filter(report_id=report_id).first():
+
+                if EmployeeWorkHistory.objects.filter(report_id=int(report_id)).exists():
                     return Response(
                         {'error': 'This report has already been uploaded'},
                         status=HTTP_400_BAD_REQUEST
@@ -38,44 +40,14 @@ class PayrollFileUpload(APIView):
                                            'job_group': row['job group']
                                           })
 
-        self.process_records(work_history_queue, report_id=report_id)
+        for counter in range(len(work_history_queue)):
+            key = str(report_id) + '-' + str(counter)
+            # Dump all the rows in Redis and get the celery worker to ingest it later
+            cache.set(key, work_history_queue[counter])
 
+        # Calls the async celery task
+        process_records(report_id, len(work_history_queue))
         return Response(status=HTTP_201_CREATED)
-
-    def process_records(self, work_history_queue, report_id):
-        for row in work_history_queue:
-            work_history = EmployeeWorkHistory(date=row['date'],
-                                               employee_id=row['employee_id'],
-                                               hours_worked=row['hours_worked'],
-                                               job_group=row['job_group'],
-                                               report_id=report_id
-                                              )
-            work_history.save()
-            date_range = get_date_range(row['date'])
-            report_qs = Report.objects.filter(pay_period__contains=row['date']).filter(id=row['employee_id'])
-
-            if report_qs:
-                existing_hours = float(report_qs.first().hours_worked)
-                rp = Report(employee_id=row['employee_id'],
-                            pay_period=date_range,
-                            hours_worked=existing_hours + float(row['hours_worked']),
-                            amount_paid=123.45)
-
-            if not report_qs:
-                rp = Report(employee_id=row['employee_id'],
-                            pay_period=date_range,
-                            hours_worked=float(row['hours_worked']),
-                            amount_paid=123.45)
-
-            rp.save()
-
-
-
-
-
-
-
-
 
 
 class GetReport(APIView):
