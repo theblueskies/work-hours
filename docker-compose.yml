@@ -3,6 +3,7 @@ services:
   # App
   waveapp:
     build: ./backend
+    command: ./run_app.sh
     ports:
       - "8000:8000"
     depends_on:
@@ -11,7 +12,7 @@ services:
     volumes:
       - ./backend:/src
     environment:
-      # - DJANGO_SETTINGS_MODULE=payroll.settings
+      - DJANGO_SETTINGS_MODULE=payroll.settings
       - ENVIRON=local
       - REDIS_HOST=redis
       - REDIS_PORT=6379
@@ -40,6 +41,21 @@ services:
       - "5432:5432"
     networks:
       - default
+
+  worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: ./run_celery.sh
+    volumes:
+      - ./backend:/src
+    depends_on:
+      - redis
+      - postgres
+    # links:
+    #   - redis
+    #   - postgres
+
 
 networks:
   waveapp:
