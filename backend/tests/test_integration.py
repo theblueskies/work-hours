@@ -7,6 +7,8 @@ import pytest
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
+from api.models import Report
+from api.serializers import ReportSerializer
 from api.util import get_date_range
 from tests.test_serializer import generate_report_instances
 
@@ -51,7 +53,7 @@ class TestGetReport(APITestCase):
                          ]
 
         url = reverse('report')
-
+        
         response = self.client.get(url)
         assert response.status_code == 200
-        assert response.data == expected_data
+        assert response.context['data'] == ReportSerializer(Report.objects.all(), many=True).data

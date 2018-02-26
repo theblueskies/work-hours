@@ -32,12 +32,16 @@ def test_serializer():
                         ('employee_id', 1),
                         ('pay_period', '{"bounds": "[]", "lower": "2018-02-03T07:18:33.568876", "upper": "2018-02-15T07:18:33.568876"}'),
                         ('hours_worked', '25.00'),
-                        ('amount_paid', '100.00')]),
+                        ('amount_paid', '100.00'),
+                        ('lower', datetime(2018, 2, 3, 7, 18, 33, 568876)),
+                        ('upper', datetime(2018, 2, 15, 7, 18, 33, 568876))]),
                      OrderedDict([
                          ('employee_id', 2),
                          ('pay_period', '{"bounds": "[]", "lower": "2018-02-03T07:18:33.568876", "upper": "2018-02-15T07:18:33.568876"}'),
                          ('hours_worked', '25.00'),
-                         ('amount_paid', '100.00')])
+                         ('amount_paid', '100.00'),
+                         ('lower', datetime(2018, 2, 3, 7, 18, 33, 568876)),
+                         ('upper', datetime(2018, 2, 15, 7, 18, 33, 568876))])
                      ]
 
     assert serializer.data == expected_data

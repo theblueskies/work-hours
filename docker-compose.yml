@@ -52,6 +52,15 @@ services:
     depends_on:
       - redis
       - postgres
+    environment:
+      - DJANGO_SETTINGS_MODULE=payroll.settings
+      - ENVIRON=local
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - DB_USER=postgres
+      - DB_HOST=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=wave_db
     # links:
     #   - redis
     #   - postgres

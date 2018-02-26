@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>{% block title %}Wave accounts{% endblock %}</title>
+
+    {# Load the tag library #}
+    {% load bootstrap3 %}
+
+    {# Load CSS and JavaScript #}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+
+    {# Display django.contrib.messages as Bootstrap alerts #}
+    {% bootstrap_messages %}
+    <style>
+        .options{
+            float: left;
+        }
+        header{
+            width: 100%;
+            position: relative;
+            z-index: 99;
+            background: rgba(0,0,0,.1);
+        }
+       .innerContainer{
+            max-width: 1200px;
+            margin: auto;
+       }
+       nav{
+        }
+       nav ul{
+          list-style: none;
+        }
+       nav ul li{
+          display: inline-block;
+          margin-left: 20px;
+       }
+       nav ul li a{
+          display: inline-block;
+          padding: 20px;
+       }
+       .clear:after {
+        content: "";
+        display: table;
+        clear: both;
+        }
+    </style>
+</head>
+<body>
+    <header class="clear">
+        <div class="innerContainer">
+            <h1 class="col"><a href="/report/">Waveapp</a></h1>
+
+            <nav class="col left">
+                <ul>
+                    <li><a href="{% url 'upload' %}">Upload File</a></li>
+                    <li><a href="{% url 'report' %}">Report</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    {% block content %}
+        {# Display a form #}
+        <form enctype="multipart/form-data" action="/upload/" method="post" class="form">
+          {% csrf_token %}
+          Select file: <input type="file" name="file"><br>
+          {% buttons %}
+            <button type="submit" class="btn btn-primary">
+              {% bootstrap_icon "star" %} Submit
+            </button>
+          {% endbuttons %}
+        </form>
+    {% endblock %}
+</body>
+</html>

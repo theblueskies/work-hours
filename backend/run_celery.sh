@@ -4,4 +4,4 @@
 sleep 4
 
 # run Celery worker
-su -m user -c "celery worker -A payroll.celeryconf"
+su -m user -c "celery worker -A payroll.celeryconf --loglevel=info"
