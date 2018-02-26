@@ -15,6 +15,4 @@ dev:
 clean:
 	docker-compose rm -f
 
-fresh:
-	build
-	dev
+fresh: build dev

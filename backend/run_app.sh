@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # wait for Postgresql server to start
-sleep 4
+sleep 10
 
 # prepare init migration
 su -m user -c "python manage.py makemigrations"
