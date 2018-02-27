@@ -62,9 +62,9 @@
         </div>
     </header>
     {% block content %}
-        {% if file_already_uploaded %}
+        {% if error %}
             <div>
-                <p>Error: File has already been uploaded</p>
+                <p>Error: {{ error }}</p>
             <div>
         {% else %}
             <div>

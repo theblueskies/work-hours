@@ -34,29 +34,35 @@ class PayrollFileUpload(APIView):
         io_string = io.StringIO(file_obj)
         work_history_queue = []
 
-        for row in csv.DictReader(io_string, delimiter=',', quotechar='|'):
-            if row['date'] == 'report id':
-                report_id = row['hours worked'] # The report ID is stored in this column
+        try:
+            for row in csv.DictReader(io_string, delimiter=',', quotechar='|'):
+                if row['date'] == 'report id':
+                    report_id = row['hours worked'] # The report ID is stored in this column
 
-                if EmployeeWorkHistory.objects.filter(report_id=int(report_id)).exists():
-                    context['file_already_uploaded'] = True
-                    return HttpResponse(template.render(context, request), status=400)
-            else:
-                date = datetime.strptime(row['date'], '%d/%m/%Y')
-                work_history_queue.append({'date': date,
-                                           'employee_id': row['employee id'],
-                                           'hours_worked': row['hours worked'],
-                                           'job_group': row['job group']
-                                          })
+                    if EmployeeWorkHistory.objects.filter(report_id=int(report_id)).exists():
+                        context['error'] = 'File has already been uploaded'
+                        return HttpResponse(template.render(context, request), status=400)
+                else:
+                    date = datetime.strptime(row['date'], '%d/%m/%Y')
+                    work_history_queue.append({'date': date,
+                                               'employee_id': row['employee id'],
+                                               'hours_worked': row['hours worked'],
+                                               'job_group': row['job group']
+                                              })
 
-        for counter in range(len(work_history_queue)):
-            key = str(report_id) + '-' + str(counter)
-            # Dump all the rows in Redis and get the celery worker to ingest it later
-            cache.set(key, work_history_queue[counter])
+            for counter in range(len(work_history_queue)):
+                key = str(report_id) + '-' + str(counter)
+                # Dump all the rows in Redis and get the celery worker to ingest it later
+                cache.set(key, work_history_queue[counter])
 
-        # Calls the async celery task
-        process_records.delay(report_id, len(work_history_queue))
-        return HttpResponse(template.render(context, request), status=201)
+            # Calls the async celery task
+            process_records.delay(report_id, len(work_history_queue))
+            return HttpResponse(template.render(context, request), status=201)
+
+        except KeyError:
+            context['error'] = 'Corrupt File / Keys missing in file. Please try again'
+            return HttpResponse(template.render(context, request), status=400)
+
 
 
 class GetReport(APIView):
