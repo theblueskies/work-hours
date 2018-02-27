@@ -64,6 +64,6 @@ class GetReport(APIView):
         template = loader.get_template('api/report.html')
         reports = Report.objects.all().order_by('pay_period')
         serialized = ReportSerializer(reports, many=True)
-        context = {'headers': ['Employee ID', 'Hours Worked', 'Amount Paid', 'Pay Period'],
+        context = {'headers': ['Employee ID', 'Pay Period', 'Amount Paid'],
                    'data': serialized.data}
         return HttpResponse(template.render(context, request), status=200)
