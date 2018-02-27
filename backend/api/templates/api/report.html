@@ -4,6 +4,7 @@
 <head>
     <meta charset="utf-8">
     <title>{% block title %}Wave accounts{% endblock %}</title>
+    <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
 
     {# Load the tag library #}
     {% load bootstrap3 %}
@@ -46,6 +47,29 @@
         display: table;
         clear: both;
         }
+
+    #customers {
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+    }
+
+    #customers td, #customers th {
+        border: 1px solid #ddd;
+        padding: 8px;
+    }
+
+    #customers tr:nth-child(even){background-color: #f2f2f2;}
+
+    #customers tr:hover {background-color: #ddd;}
+
+    #customers th {
+        padding-top: 12px;
+        padding-bottom: 12px;
+        text-align: left;
+        background-color: #4CAF50;
+        color: white;
+    }
     </style>
 </head>
 <body>
@@ -64,16 +88,27 @@
     </header>
 <div>
 {% block content %}
-    {% for item in data %}
-        <div>
-            <p>
-                Employee ID: {{item.employee_id}}
-                Hours Worked: {{item.hours_worked}}
-                Amount Paid: $ {{item.amount_paid}}
-                Pay Period: {{item.lower}} to {{item.upper}}
-            </p>
-        <div>
-    {% endfor %}
+    <table id="customers">
+        <tr>
+        {% for header in headers %}
+            <th>{{ header }}</th>
+        {% endfor %}
+        </tr>
+        <tbody>
+
+            {% for item in data %}
+                <tr>
+                <div>
+                    <td>{{item.employee_id}} </td>
+                    <td>{{item.hours_worked}} </td>
+                    <td>{{item.amount_paid}} </td>
+                    <td>{{item.lower}} - {{item.upper}} </td>
+                </div>
+            {% endfor %}
+            </tr>
+        </tbody>
+    </table>
+
 {% endblock %}
 </div>
 </body>
