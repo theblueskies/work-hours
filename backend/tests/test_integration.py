@@ -53,7 +53,7 @@ class TestGetReport(APITestCase):
                          ]
 
         url = reverse('report')
-        
+
         response = self.client.get(url)
         assert response.status_code == 200
         assert response.context['data'] == ReportSerializer(Report.objects.all(), many=True).data

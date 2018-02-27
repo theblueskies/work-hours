@@ -23,6 +23,7 @@ def process_records(self, report_id, count):
     for counter in range(count):
         key = str(report_id) + '-' + str(counter)
         item = cache.get(key)
+        cache.delete(key)
         if item:
             work_history = EmployeeWorkHistory(date=item['date'],
                                                employee_id=item['employee_id'],
@@ -44,7 +45,7 @@ def process_records(self, report_id, count):
                 existing_instance.save()
 
             # Create a new instance for the user and pay period range
-            if not report_qs:
+            else:
                 new_report = Report(employee_id=item['employee_id'],
                                     pay_period=date_range,
                                     hours_worked=Decimal(item['hours_worked']),

@@ -14,7 +14,7 @@ def get_date_range(date):
         lower_date = date.replace(day=16)
         upper_date = date.replace(day=month[1])
     else:
-        lower_date = date.replace(day=month[0])
+        lower_date = date.replace(day=1)
         upper_date = date.replace(day=15)
 
     return DateTimeTZRange(lower=lower_date, upper=upper_date, bounds='[]')
