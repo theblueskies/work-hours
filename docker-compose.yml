@@ -61,10 +61,6 @@ services:
       - DB_HOST=postgres
       - DB_PASSWORD=postgres
       - DB_NAME=wave_db
-    # links:
-    #   - redis
-    #   - postgres
-
 
 networks:
   waveapp:

@@ -1,7 +1,9 @@
 Waveapps se-challenge-payroll product  
 
 A bit about the app: The app is done up with Python, Django, Postgres, Redis with Docker containers.
-I have Celery workers running in the worker container which picks up the records that need to be processed, and updates the Postgres db asynchronously in the background. This enables speedy responses to the user. The app will run on either a Mac or a Linux and NEEDS to have docker installed.
+I have Celery workers running in the worker container which picks up the records that need to be processed, and updates the Postgres db asynchronously in the background. This enables speedy responses to the user. I am excited about the backend architecture. I am also excited about the docker containers, because this provides the same replicable platform to keep iterating on this app no matter what their host OS is. Docker containers also enable us to better package our app for production level deployments.
+
+The app will run on either a Mac or a Linux and NEEDS to have docker installed.
 
 PREREQUISITE: Have docker installed.
 
