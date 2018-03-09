@@ -2,7 +2,7 @@ version: '3'
 services:
   # App
   waveapp:
-    build: ./backend
+    build: ./app
     command: ./run_app.sh
     ports:
       - "8000:8000"
@@ -10,7 +10,7 @@ services:
       - redis
       - postgres
     volumes:
-      - ./backend:/src
+      - ./app:/src
     environment:
       - DJANGO_SETTINGS_MODULE=payroll.settings
       - ENVIRON=local
@@ -44,11 +44,11 @@ services:
 
   worker:
     build:
-      context: ./backend
+      context: ./app
       dockerfile: Dockerfile
     command: ./run_celery.sh
     volumes:
-      - ./backend:/src
+      - ./app:/src
     depends_on:
       - redis
       - postgres
